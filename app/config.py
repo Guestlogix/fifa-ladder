@@ -9,15 +9,13 @@ def get_local_database_url():
 class Config(object):
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', get_local_database_url())
     HOST="0.0.0.0"
     PORT = 5000
 
 class ProductionConfig(Config):
     PORT = int(os.environ.get('PORT', 5000))
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://localhost')
 
 class DevelopmentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = get_local_database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     DEBUG = True
