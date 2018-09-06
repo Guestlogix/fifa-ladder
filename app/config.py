@@ -15,7 +15,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     PORT = int(os.environ.get('PORT', 5000))
-    SQLALCHEMY_DATABASE_URI = 'mysql://user@localhost/foo'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://localhost')
 
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = get_local_database_url()
