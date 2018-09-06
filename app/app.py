@@ -64,3 +64,8 @@ def record_game():
         'message': 'Recorded new game.',
         'game': result,
     })
+
+
+# Gunicorn Run
+if __name__ == '__main__':
+    app.run()
