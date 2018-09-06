@@ -1,13 +1,14 @@
-import os
 from flask_script import Manager, commands
 from flask_migrate import Migrate, MigrateCommand
 from app import app, db
 
+# Manager
+manager = Manager(app)
+
 # Migrations
 migrate = Migrate(app, db)
 
-# Manager
-manager = Manager(app)
+# Manager Commands
 manager.add_command('db', MigrateCommand)
 manager.add_command(
     "runserver",

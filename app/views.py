@@ -1,23 +1,8 @@
-import os
-import json
-import config
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-
-# Setup App
-app = Flask(__name__)
-configuration_file = os.environ.get('ENV_VAR_DETERMINING_PROD', 'config.DevelopmentConfig') #determine config
-app.config.from_object(configuration_file)
-
-# Setup + SQLAlchemy + Marshmallow
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
-
-# Import Models + Schema
-from models import Player, GamePlayer, Game
-from schema import players_schema, game_schema
+from flask import render_template, request, redirect, jsonify
+from app.models import Player, GamePlayer, Game
+from app.schema import players_schema, game_schema
+from app import app
 
 @app.route('/', methods=['GET'])
 def index():
@@ -64,8 +49,3 @@ def record_game():
         'message': 'Recorded new game.',
         'game': result,
     })
-
-
-# Gunicorn Run
-if __name__ == '__main__':
-    app.run()

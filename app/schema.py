@@ -1,5 +1,5 @@
-from models import Player, GamePlayer, Game
 from marshmallow import fields
+from app.models import Player, GamePlayer, Game
 from app import ma
 
 class PlayerSchema(ma.ModelSchema):
