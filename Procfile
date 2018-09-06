@@ -1,1 +1,1 @@
-web: gunicorn -b 0.0.0.0:$PORT ladder:app
+web: gunicorn -b 0.0.0.0:$PORT ladder.manage:manage
