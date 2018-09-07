@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import render_template, request, redirect, jsonify
 from app.models import Player, GamePlayer, Game
 from app.schema import players_schema, game_schema
-from app import app
+from app import app, db
 
 @app.route('/', methods=['GET'])
 def index():
