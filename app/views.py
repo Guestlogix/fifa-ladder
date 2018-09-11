@@ -1,8 +1,9 @@
 from datetime import datetime
 from flask import render_template, request, redirect, jsonify
 from app.models import Player, GamePlayer, Game
-from app.schema import players_schema, game_schema
+from app.schema import players_schema, player_schema, game_schema
 from app import app, db
+import uuid
 
 @app.route('/', methods=['GET'])
 def index():
@@ -13,6 +14,25 @@ def players():
   players = Player.query.all()
   return players_schema.jsonify(players)
 
+@app.route('/players', methods=['POST'])
+def create_player():
+  # Obtain JSON
+  json_data = request.get_json()
+  if not json_data:
+    return jsonify({'message': 'No input data provided'}), 400
+
+  # Create Player
+  next_rank = db.session.query(Player).count() + 1
+  player = Player(email=json_data['email'], first_name=json_data['firstname'], last_name=json_data['lastname'], rank=next_rank)
+  db.session.add(player)
+
+  # Commit to DB
+  db.session.commit()
+
+  # Generate Response
+  result = player_schema.dump(player)
+  return jsonify(result)
+
 @app.route('/game', methods=['POST'])
 def record_game():
   # Obtain JSON
@@ -21,8 +41,9 @@ def record_game():
     return jsonify({'message': 'No input data provided'}), 400
 
   # Find Players
-  winner = Player.query.get(json_data['winner_id'])
-  loser = Player.query.get(json_data['loser_id'])
+  winner = Player.query.filter_by(email=json_data['winner']).first()
+  loser = Player.query.filter_by(email=json_data['loser']).first()
+  
   if not winner or not loser:
     return jsonify({'message': 'Players not found'}), 401
 

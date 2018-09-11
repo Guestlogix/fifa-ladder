@@ -6,7 +6,7 @@ from flask_marshmallow import Marshmallow
 
 # Setup App
 app = Flask(__name__)
-configuration_file = os.environ.get('ENV_VAR_DETERMINING_PROD', 'app.config.DevelopmentConfig') #determine config
+configuration_file = os.environ.get('ENV_VAR_DETERMINING_PROD', 'app.config.DevelopmentConfig') #TODO: determine config
 app.config.from_object(configuration_file)
 
 # Setup + SQLAlchemy + Marshmallow
