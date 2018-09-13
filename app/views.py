@@ -40,6 +40,10 @@ def create_player_helper(id):
 
 # Tokenizes an returns as a dict message e.g `<@U831BB2JX|gpsarakis> 1 <@U60U7A0KW|hank> 2`
 def parse_message(message_text):
+  text = request.form.get('text', None)
+  if (text == None):
+    raise InvalidInput('Please send message of form "@username score @username score"', status_code=410)
+
   user_ids = re.findall('@(.*?)\|', message_text)
   scores = [int(s) for s in re.findall('([^[>]+)(?:$|<)(?:$|)', message_text)]
 
@@ -71,9 +75,7 @@ def get_games():
 
 @app.route('/games', methods=['POST'])
 def record_game():
-  payload = parse_json(request)
-  print('>>>>>>>{}'.format(payload))
-  data = parse_message(payload['text'])
+  data = parse_message(request)
 
   # Find Players
   player_a = Player.query.get(data['player_a_id'])
