@@ -72,7 +72,7 @@ def get_games():
 @app.route('/games', methods=['POST'])
 def record_game():
   payload = parse_json(request)
-  print('>>>>>>>{}', payload)
+  print('>>>>>>>{}'.format(payload))
   data = parse_message(payload['text'])
 
   # Find Players
