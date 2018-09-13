@@ -10,24 +10,29 @@ Install requirements
 pipenv install
 ```
 
+Add Slack Token to Env Vars
+```
+export SLACK_API_TOKEN=[TOKEN]
+```
+
 Init Database
 > If you want a postgres other than your default user's e.g. `postgresql://username@localhost`, run `export DATABASE_URL=<URL>` and the app will use that url instead.
 ```
 pipenv run python ./ladder/manage.py db init
 ```
 
-Make the migrates
+Make the migrations
 ```
 pipenv run python ./ladder/manage.py db migrate
 ```
 
-Migrate
+Run the migrations
 ```
 pipenv run python ./ladder/manage.py db upgrade
 ```
 
 Run the server
-````
+```
 pipenv run python ./ladder/manage.py runserver
 ```
 

@@ -9,12 +9,13 @@ class PlayerSchema(ma.ModelSchema):
 class GamePlayerSchema(ma.ModelSchema):
     class Meta:
         model = GamePlayer
+    player = fields.Nested(PlayerSchema)
 
 class GameSchema(ma.ModelSchema):
     class Meta:
         model = Game
-    winner = fields.Nested(GamePlayerSchema())
-    loser = fields.Nested(GamePlayerSchema())
+    player_a = fields.Nested(GamePlayerSchema)
+    player_b = fields.Nested(GamePlayerSchema)
         
 player_schema = PlayerSchema()
 players_schema = PlayerSchema(many=True)
