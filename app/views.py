@@ -43,22 +43,19 @@ def create_player_helper(id):
 # Tokenizes an returns as a dict message e.g `<@U831BB2JX|gpsarakis> 1 <@U60U7A0KW|hank> 2`
 def parse_message(request):
   text = request.form.get('text', None)
-  if (text == None):
+
+  try:
+    user_ids = re.findall('@(.*?)\|', text)
+    scores = [int(s) for s in re.findall('([^[>]+)(?:$|<)(?:$|)', text)]
+  except Exception:
     raise InvalidInput('Please send message of form "@username score @username score"', status_code=410)
-
-  user_ids = re.findall('@(.*?)\|', text)
-  scores = [int(s) for s in re.findall('([^[>]+)(?:$|<)(?:$|)', text)]
-
-  if (len(user_ids) != 2 or len(scores) != 2):
-    raise InvalidInput('Please send message of form "@username score @username score"', status_code=410)
-
+  
   return {
     'player_a_id': user_ids[0],
     'player_a_score': scores[0],
     'player_b_id': user_ids[1],
     'player_b_score': scores[1],
   }
-
 
 
 @app.route('/', methods=['GET'])
