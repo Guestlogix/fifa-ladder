@@ -48,7 +48,7 @@ def parse_message(request):
     user_ids = re.findall('@(.*?)\|', text)
     scores = [int(s) for s in re.findall('([^[>]+)(?:$|<)(?:$|)', text)]
   except Exception:
-    raise InvalidInput('Please send message of form "@username score @username score"', status_code=410)
+    raise InvalidInput('Please send message of form "@username score @username score"', status_code=200)
   
   return {
     'player_a_id': user_ids[0],
