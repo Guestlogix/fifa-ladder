@@ -12,6 +12,7 @@ class Player(db.Model):
     id = db.Column(db.String(10), index=True, unique=True, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     rank = db.Column(db.Integer, index=True)
+    image_url = db.Column(db.String(1000))
 
     @property
     def wins(self):

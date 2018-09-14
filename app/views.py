@@ -29,10 +29,11 @@ def create_player_helper(id):
   sc = SlackClient(slack_token)
   slack_user = sc.api_call("users.info", user=id )
   name = slack_user['user']['real_name']
+  image_url = slack_user['user']['profile']['image_512']
 
   # Create Player
   next_rank = db.session.query(Player).count() + 1
-  player = Player(id=id, name=name, rank=next_rank)
+  player = Player(id=id, name=name, image_url=image_url, rank=next_rank)
   db.session.add(player)
 
   # Commit to DB

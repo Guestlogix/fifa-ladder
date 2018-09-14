@@ -49,6 +49,7 @@ class App extends React.Component {
             return (
               <tr>
                 <td>
+                  <img src={player.image_url} width={100} />
                   <span>{i + 1} - </span>
                   <span>{player.name} - </span>
                   <span>
