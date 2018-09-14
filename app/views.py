@@ -73,7 +73,6 @@ def get_players():
 @app.route('/games', methods=['GET'])
 def get_games():
   games = Game.query.all()
-  print('>>>>>>>>>>PLAYERS: {}'.format(games[0].players))
   return games_schema.jsonify(games)
 
 @app.route('/games', methods=['POST'])
@@ -84,8 +83,6 @@ def record_game():
   game = Game()
   db.session.add(game)
   db.session.flush()
-
-  print('GAME: ', game.__dict__)
 
   # Find Players
   player_a = Player.query.get(data['player_a_id'])
