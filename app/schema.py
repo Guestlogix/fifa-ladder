@@ -4,18 +4,20 @@ from app import ma
 
 class PlayerSchema(ma.ModelSchema):
     class Meta:
+        fields = ('id', 'name', 'rank', 'wins', 'losses', 'ties')
         model = Player
 
 class GamePlayerSchema(ma.ModelSchema):
     class Meta:
+        fields = ('player', 'score')
         model = GamePlayer
     player = fields.Nested(PlayerSchema)
 
 class GameSchema(ma.ModelSchema):
     class Meta:
-        model = Game
-    player_a = fields.Nested(GamePlayerSchema)
-    player_b = fields.Nested(GamePlayerSchema)
+        fields = ('id', 'date', 'players')
+        model = Game      
+    players = fields.Nested(GamePlayerSchema, many=True)
         
 player_schema = PlayerSchema()
 players_schema = PlayerSchema(many=True)

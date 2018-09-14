@@ -1,7 +1,10 @@
-from app import app, db
+import uuid, datetime
+from sqlalchemy import select, func, text
+from sqlalchemy.orm import object_session
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
-import uuid
+from app import app, db
+from app.enums import GameOutcome
 
 class Player(db.Model):
     __tablename__ = 'player'
@@ -10,33 +13,40 @@ class Player(db.Model):
     name = db.Column(db.String(64), index=True, unique=True)
     rank = db.Column(db.Integer, index=True)
 
+    @property
+    def wins(self):
+        return object_session(self).scalar(select([func.count(GamePlayer.id)]).where(GamePlayer.player_id == self.id).where(GamePlayer.game_outcome == GameOutcome.win))
+
+    @property
+    def losses(self):
+        return object_session(self).scalar(select([func.count(GamePlayer.id)]).where(GamePlayer.player_id == self.id).where(GamePlayer.game_outcome == GameOutcome.loss))
+
+    @property
+    def ties(self):
+        return object_session(self).scalar(select([func.count(GamePlayer.id)]).where(GamePlayer.player_id == self.id).where(GamePlayer.game_outcome == GameOutcome.tie))
+
     def __repr__(self):
-        return '<Player %r>' % (self.email)
+        return '<Player %r>' % (self.name)
 
 class GamePlayer(db.Model):
     __tablename__ = 'game_player'
 
     id = db.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
+    game_id = db.Column(UUID(as_uuid=True), db.ForeignKey('game.id'))
     player_id = db.Column(db.String(10), db.ForeignKey('player.id'))
-    player = db.relationship('Player')
+    player = db.relationship("Player", backref="player")
     score = db.Column(db.Integer, index=True)
+    game_outcome = db.Column(db.Enum(GameOutcome), nullable=False)
 
     def __repr__(self):
-        return '<Player %r>' % (self.id)
+        return '<GamePlayer %r>' % (self.id)
 
 class Game(db.Model):
     __tablename__ = 'game'
 
     id = db.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
-    player_a_id = db.Column(UUID(as_uuid=True), db.ForeignKey('game_player.id'))
-    player_a = db.relationship('GamePlayer', foreign_keys=[player_a_id])
-    player_b_id = db.Column(UUID(as_uuid=True), db.ForeignKey('game_player.id'))
-    player_b = db.relationship('GamePlayer', foreign_keys=[player_b_id])
-    date = db.Column(db.DateTime, index=True)
-
-    @hybrid_property
-    def outcome(self):
-        return 'TIE' if self.player_a.score == self.player_b.score else 'CONCLUSION'
-
+    date = db.Column(db.DateTime, index=True, default=datetime.datetime.now)
+    players = db.relationship("GamePlayer", backref="game")
+    
     def __repr__(self):
         return '<Game %r>' % (self.id)

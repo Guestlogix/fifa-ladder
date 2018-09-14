@@ -50,7 +50,10 @@ class App extends React.Component {
               <tr>
                 <td>
                   <span>{i + 1} - </span>
-                  <span>{player.name}</span>
+                  <span>{player.name} - </span>
+                  <span>
+                    ({player.wins}-{player.losses}-{player.ties})
+                  </span>
                 </td>
               </tr>
             );
@@ -59,19 +62,18 @@ class App extends React.Component {
         <h2>Games</h2>
         <table>
           {this.state.games.map((game, i) => {
-            let player_a = game["player_a"]["player"]["name"];
-            let player_a_score = game["player_a"]["score"];
-            let player_b = game["player_b"]["player"]["name"];
-            let player_b_score = game["player_b"]["score"];
+            let player_a = game["players"][0];
+            let player_b = game["players"][1];
             return (
               <tr>
                 <td>
+                  <span>{game.date} - </span>
                   <span>
-                    {player_a} ({player_a_score})
+                    {player_a.player.name} ({player_a.score})
                   </span>
                   <span> v. </span>
                   <span>
-                    {player_b} ({player_b_score})
+                    {player_b.player.name} ({player_b.score})
                   </span>
                 </td>
               </tr>

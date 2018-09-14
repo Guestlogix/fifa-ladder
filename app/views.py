@@ -4,6 +4,7 @@ from flask import render_template, request, redirect, jsonify
 from app.exceptions import InvalidInput
 from app.models import Player, GamePlayer, Game
 from app.schema import players_schema, player_schema, games_schema, game_schema
+from app.enums import GameOutcome
 from app import app, db
 from slackclient import SlackClient
 
@@ -71,11 +72,19 @@ def get_players():
 @app.route('/games', methods=['GET'])
 def get_games():
   games = Game.query.all()
+  print('>>>>>>>>>>PLAYERS: {}'.format(games[0].players))
   return games_schema.jsonify(games)
 
 @app.route('/games', methods=['POST'])
 def record_game():
   data = parse_message(request)
+
+  # Create the Game
+  game = Game()
+  db.session.add(game)
+  db.session.flush()
+
+  print('GAME: ', game.__dict__)
 
   # Find Players
   player_a = Player.query.get(data['player_a_id'])
@@ -90,20 +99,26 @@ def record_game():
     player_b = create_player_helper(data['player_b_id'])
 
   # Create the GamePlayers
-  player_a_gameplayer = GamePlayer(player_id=player_a.id, score=data['player_a_score'])
-  player_b_gameplayer = GamePlayer(player_id=player_b.id, score=data['player_b_score'])
+  player_a_gameplayer = GamePlayer(player_id=player_a.id, score=data['player_a_score'], game_id=game.id)
+  player_b_gameplayer = GamePlayer(player_id=player_b.id, score=data['player_b_score'], game_id=game.id)
 
-  # Create the Game
-  game = Game(player_a=player_a_gameplayer, player_b=player_b_gameplayer, date=datetime.now())
-  db.session.add(game)
 
-  # Assign winner/loser
+  # Determine and assign winner/loser
+  winner = None
+  loser = None
   if (player_a_gameplayer.score > player_b_gameplayer.score):
     winner = player_a
     loser = player_b
+    player_a_gameplayer.game_outcome = GameOutcome.win
+    player_b_gameplayer.game_outcome = GameOutcome.loss
   elif (player_b_gameplayer.score > player_a_gameplayer.score):
     winner = player_b
     loser = player_a
+    player_a_gameplayer.game_outcome = GameOutcome.loss
+    player_b_gameplayer.game_outcome = GameOutcome.win
+  else:
+    player_a_gameplayer.game_outcome = GameOutcome.tie
+    player_b_gameplayer.game_outcome = GameOutcome.tie
 
   # Update the rank if loser's rank is less than winners
   if (winner and loser):
@@ -113,6 +128,8 @@ def record_game():
       loser.rank = temp_rank
 
   # Commit all DB Changes
+  db.session.add(player_a_gameplayer)
+  db.session.add(player_b_gameplayer)
   db.session.commit()
 
   # Generate Response
