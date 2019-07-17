@@ -15,7 +15,7 @@ Add Slack Token to Env Vars
 export SLACK_API_TOKEN=[TOKEN]
 ```
 
-Init Database
+Initialize Database
 > If you want a postgres other than your default user's e.g. `postgresql://username@localhost`, run `export DATABASE_URL=<URL>` and the app will use that url instead.
 ```
 pipenv run python ./ladder/manage.py db init
